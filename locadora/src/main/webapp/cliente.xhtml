@@ -1,0 +1,150 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<link type="text/css"
+		href="css/custom-theme/jquery-ui-1.8.20.custom.css" rel="stylesheet" />
+</h:head>
+<h:body style="font-size:13px;">
+	<ui:include src="menu.xhtml" />
+	<h:form id="form">
+		<p:growl id="mensagens" showDetail="true" />
+
+		<p:panel header="Cliente">
+			<h:panelGrid columns="2">
+				<h:outputLabel value="Nome:" for="cNome" />
+				<br />
+				<p:inputText id="cNome" value="#{clienteHandle.cliente.nome}" />
+				<p:watermark for="cNome" value="Digite o nome do cliente" />
+				<h:outputLabel value="CPF:" for="cCPF" />
+				<br />
+				<p:inputMask id="cCPF" value="#{clienteHandle.cliente.cpf}"
+					mask="999.999.999-99" />
+				<p:watermark for="cCPF" value="Digite o cpf" />
+				<p:commandButton value="Adicionar" id="madd"
+					actionListener="#{clienteHandle.inserir}" update="@form" />
+
+			</h:panelGrid>
+
+		</p:panel>
+
+		<br />
+		<p:dataTable var="c" id="clientes" value="#{clienteHandle.clientes}"
+			emptyMessage="Nenhum cliente encontrado" paginator="true" rows="10"
+			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+			rowsPerPageTemplate="5,10,15,20,25,30,35,40,45,50"
+			paginatorPosition="bottom" rowKey="#{c.codigoPessoa}"
+			selectionMode="single" selection="#{clienteHandle.cliente2}"
+			editable="true" widgetVar="tabelaClientes" draggableColumns="false"
+			resizableColumns="false">
+
+			<p:ajax event="rowEdit" listener="#{clienteHandle.alterar}"
+				update="@this" />
+			<p:ajax event="rowEditCancel" listener="#{clienteHandle.alterar}"
+				update="@this" />
+
+			<f:facet name="header">
+				<p:outputPanel>
+					<h:outputText value="Pesquisar: " />
+					<p:inputText id="globalFilter"
+						onkeyup="PF('tabelaClientes').filter()" filterBy="#{c.nome}" />
+				</p:outputPanel>
+			</f:facet>
+
+			<p:column headerText="Código" sortBy="#{c.codigoPessoa}"
+				filterBy="#{c.codigoPessoa}" filterStyle="display:none;"
+				style="width:80px">
+				<h:outputText value="#{c.codigoPessoa}" />
+			</p:column>
+
+			<p:column headerText="Nome" sortBy="#{c.nome}" filterBy="#{c.nome}"
+				filterStyle="display:none;">
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{c.nome}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:inputText value="#{c.nome}" />
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+			<p:column headerText="CPF" sortBy="#{c.cpf}" filterBy="#{c.cpf}"
+				filterStyle="display:none;">
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{c.cpf}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:inputText value="#{c.cpf}" />
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+			<p:column headerText="Opções" style="width:95px;">
+
+				<p:rowEditor />
+
+				<p:commandButton id="btnExcluir1"
+					oncomplete="PF('confimExcluir').show()" icon="ui-icon-close"
+					title="Excluir" style="font-size: 7px; margin-left:10px;">
+					<f:setPropertyActionListener target="#{clienteHandle.cliente2}"
+						value="#{c}" />
+				</p:commandButton>
+
+				<p:commandButton id="btnExibir1" update="@form"
+					icon="ui-icon-search" title="Visualizar"
+					oncomplete="PF('exibicao').show()"
+					style="font-size: 7px; margin-left:10px;">
+
+					<f:setPropertyActionListener target="#{clienteHandle.cliente2}"
+						value="#{c}" />
+				</p:commandButton>
+
+			</p:column>
+
+		</p:dataTable>
+
+
+		<p:confirmDialog id="painelExcluir1"
+			message="Deseja realmente excluir?" header="Excluindo..."
+			severity="alert" widgetVar="confimExcluir">
+
+			<p:commandButton value="Sim"
+				actionListener="#{clienteHandle.excluir}" update="@form"
+				oncomplete="PF('confimExcluir').hide()" />
+
+			<p:commandButton value="Não" oncomplete="PF('confimExcluir').hide()" />
+
+		</p:confirmDialog>
+
+
+
+		<p:dialog widgetVar="exibicao" header="Detalhes" resizable="false"
+			width="200" showEffect="clip" hideEffect="fold" modal="true">
+
+
+			<h:panelGrid id="pgExibicao1" columns="2" cellpadding="4">
+				<h:outputText value="Código: " />
+				<h:outputText value="#{clienteHandle.cliente2.codigoPessoa}" />
+				<h:outputText value="Nome: " />
+				<h:outputText value="#{clienteHandle.cliente2.nome}" />
+				<h:outputText value="CPF: " />
+				<h:outputText value="#{clienteHandle.cliente2.cpf}" />
+			</h:panelGrid>
+
+
+		</p:dialog>
+
+		<p:contextMenu for="clientes">
+			<p:menuitem value="Visualizar " icon="ui-icon-search"
+				oncomplete="PF('exibicao').show()" update="@form" />
+			<p:menuitem value="Deletar " icon="ui-icon-close"
+				oncomplete="PF('confimExcluir').show()" update="@form" />
+		</p:contextMenu>
+	</h:form>
+</h:body>
+</html>

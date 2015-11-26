@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<link type="text/css"
+		href="css/custom-theme/jquery-ui-1.8.20.custom.css" rel="stylesheet" />
+</h:head>
+<h:body style="font-size:13px;">
+	<ui:include src="menu.xhtml" />
+	<h:form id="form">
+		<p:growl id="mensagens" showDetail="true" />
+		<p:tab title="Locação">
+
+
+			<p:panel header="Locação">
+				<h:panelGrid columns="2">
+
+					<h:outputLabel value="Filme" />
+					<p:selectOneMenu value="#{locacaoHandle.filme.codigoFilme}">
+						<f:selectItem itemLabel="Selecione um filme    " itemValue="" />
+						<f:selectItems value="#{filmeHandle.filmes}" var="v_fil"
+							itemLabel="#{v_fil.titulo}" itemValue="#{v_fil.codigoFilme}" />
+					</p:selectOneMenu>
+
+
+					<h:outputLabel value="Clientes" />
+					<p:selectOneMenu value="#{locacaoHandle.cliente.codigoPessoa}">
+						<f:selectItem itemLabel="Selecione um cliente " itemValue="" />
+						<f:selectItems value="#{locacaoHandle.clientes}" var="v_cli"
+							itemLabel="#{v_cli.nome}" itemValue="#{v_cli.codigoPessoa}" />
+					</p:selectOneMenu>
+
+
+					<br />
+					<h:outputLabel value="" for="" />
+					<p:commandButton value="Realizar Locação" id="add3"
+						actionListener="#{locacaoHandle.inserir}" update="@form"
+						style="width:160px;" />
+				</h:panelGrid>
+
+				<p:dataTable var="l" id="locacoes" value="#{locacaoHandle.locacoes}"
+					emptyMessage="Nenhuma locação encontrada" paginator="true"
+					rows="10"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15,20,25,30,35,40,45,50"
+					paginatorPosition="bottom" rowKey="#{l.codigoLocacao}"
+					selectionMode="single" selection="#{locacaoHandle.locacao2}"
+					editable="true" widgetVar="tabelaLocacoes" draggableColumns="false"
+					resizableColumns="false">
+
+					<p:ajax event="rowEdit" listener="#{locacaoHandle.alterar}"
+						update="@this" />
+
+					<f:facet name="header">
+						<p:outputPanel>
+							<h:outputText value="Pesquisar: " />
+							<p:inputText id="globalFilter" onkeyup="PF('tabelaLocacoes').filter()"
+								filterBy="#{l.codigoLocacao}" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:column headerText="Código" sortBy="#{l.codigoLocacao}"
+						filterBy="#{l.codigoLocacao}" filterStyle="display:none;"
+						style="width:80px">
+						<h:outputText value="#{l.codigoLocacao}" />
+					</p:column>
+
+
+					<p:column headerText="Cliente" sortBy="#{l.cliente.nome}"
+						filterBy="#{l.cliente.nome}" filterStyle="display:none;">
+						<h:outputText value="#{l.cliente.nome}" />
+					</p:column>
+
+					<p:column headerText="Data de Empréstimo"
+						sortBy="#{l.dataEmprestimo}" filterBy="#{l.dataEmprestimo}"
+						filterStyle="display:none;">
+						<h:outputText value="#{l.dataEmprestimo}">
+							<f:convertDateTime dateStyle="short" pattern="dd/MM/yyyy HH:mm" />
+						</h:outputText>
+					</p:column>
+					
+					
+					<p:column headerText="Data de Devolução"
+						sortBy="#{l.dataDevolucao}" filterBy="#{l.dataDevolucao}"
+						filterStyle="display:none;">
+						<h:outputText value="#{l.dataDevolucao}">
+							<f:convertDateTime dateStyle="short" pattern="dd/MM/yyyy HH:mm" />
+						</h:outputText>
+					</p:column>
+
+					<p:column headerText="Opções" style="width:85px;">
+
+
+						<p:commandButton id="btnExcluir1"
+							oncomplete="PF('confimExcluir').show()" icon="ui-icon-close"
+							title="excluir" style="font-size: 7px; margin-left:10px;">
+							<f:setPropertyActionListener target="#{locacaoHandle.locacao2}"
+								value="#{l}" />
+						</p:commandButton>
+
+						<p:commandButton id="btnExibir1" update="@form"
+							icon="ui-icon-search" title="Visualizar"
+							oncomplete="PF('exibicao').show()"
+							style="font-size: 7px; margin-left:10px;">
+
+							<f:setPropertyActionListener target="#{locacaoHandle.locacao2}"
+								value="#{l}" />
+						</p:commandButton>
+						
+						
+						
+						<p:commandButton id="btnDevovler" update="@form"
+							icon="ui-icon-note" title="Devolver"
+							style="font-size: 7px; margin-left:10px;" actionListener="#{locacaoHandle.devolver}">						
+
+							<f:setPropertyActionListener target="#{locacaoHandle.locacao2}"
+								value="#{l}" />
+						</p:commandButton>
+
+					</p:column>
+
+				</p:dataTable>
+
+
+				<p:confirmDialog id="painelExcluir1"
+					message="Deseja realmente excluir?" header="Excluindo..."
+					severity="alert" widgetVar="confimExcluir">
+
+					<p:commandButton value="Sim"
+						actionListener="#{locacaoHandle.excluir}" update="@form"
+						oncomplete="PF('confimExcluir').hide()" />
+
+					<p:commandButton value="Não" oncomplete="PF('confimExcluir').hide()" />
+
+				</p:confirmDialog>
+
+
+
+				<p:dialog widgetVar="exibicao" header="Detalhes" resizable="false"
+					width="200" showEffect="clip" hideEffect="fold" modal="true">
+
+
+					<h:panelGrid id="pgExibicao1" columns="2" cellpadding="4" >
+						<h:outputText value="Código: " />
+						<h:outputText value="#{locacaoHandle.locacao2.codigoLocacao}" />
+						<h:outputText value="Cliente: " />
+						<h:outputText value="#{locacaoHandle.locacao2.cliente.nome}" />
+						<h:outputText value="Data de Empréstimo: " />
+						<h:outputText value="#{locacaoHandle.locacao2.dataEmprestimo}">
+							<f:convertDateTime dateStyle="short" pattern="dd/MM/yyyy HH:mm" />
+						</h:outputText>
+						<h:outputText value="Data de Devolução: " />
+						<h:outputText value="#{locacaoHandle.locacao2.dataDevolucao}">
+							<f:convertDateTime dateStyle="short" pattern="dd/MM/yyyy HH:mm" />
+						</h:outputText>
+					</h:panelGrid>
+
+
+				</p:dialog>
+
+				<p:contextMenu for="locacoes">
+					<p:menuitem value="Visualizar " icon="ui-icon-search"
+						oncomplete="PF('exibicao').show()" update="@form" />
+					<p:menuitem value="Deletar " icon="ui-icon-close"
+						oncomplete="PF('confimExcluir').show()" update="@form" />
+				</p:contextMenu>
+			</p:panel>
+		</p:tab>
+	</h:form>
+</h:body>
+</html>

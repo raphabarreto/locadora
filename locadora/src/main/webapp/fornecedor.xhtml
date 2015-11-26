@@ -1,0 +1,175 @@
+ <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<link type="text/css"
+		href="css/custom-theme/jquery-ui-1.8.20.custom.css" rel="stylesheet" />
+</h:head>
+<h:body style="font-size:13px;">
+	<ui:include src="menu.xhtml" />
+	<h:form id="form">
+		<p:growl id="mensagens" showDetail="true" />
+
+		<p:panel header="Fornecedor">
+			<h:panelGrid columns="2">
+				<h:outputLabel value="Razão Social:" for="fSocial" />
+				<br />
+				<p:inputText id="fSocial" value="#{fornecedorHandle.fornecedor.razaoSocial}" />
+				<p:watermark for="fSocial" value="Digite a razão social" />
+				
+				<h:outputLabel value="Nome Fantasia:" for="fNome" />
+				<br />
+				<p:inputText id="fNome" value="#{fornecedorHandle.fornecedor.nome}" />
+				<p:watermark for="fNome" value="Digite o nome" />
+				
+				<h:outputLabel value="CNPJ:" for="fCNPJ" />
+				<br />
+				<p:inputMask id="fCNPJ" value="#{fornecedorHandle.fornecedor.cnpj}" mask="99.999.999/9999-99" />
+				<p:watermark for="fCNPJ" value="Digite o CNPJ" />
+				
+				<h:outputLabel value="IE:" for="fIE" />
+				<br />
+				<p:inputMask id="fIE" value="#{fornecedorHandle.fornecedor.ie}" mask="999.999.999.999" />
+				<p:watermark for="fIE" value="Digite a inscrição" />
+				<p:commandButton value="Adicionar" id="madd"
+					actionListener="#{fornecedorHandle.inserir}" update="@form" />
+
+			</h:panelGrid>
+			
+		</p:panel>
+
+		<br />
+		<p:dataTable var="f" id="fornecedores" value="#{fornecedorHandle.fornecedores}"
+			emptyMessage="Nenhum fornecedor encontrado" paginator="true" rows="10"
+			paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+			rowsPerPageTemplate="5,10,15,20,25,30,35,40,45,50"
+			paginatorPosition="bottom" rowKey="#{f.codigoPessoa}"
+			selectionMode="single" selection="#{fornecedorHandle.fornecedor2}"
+			editable="true" widgetVar="tabelafornecedores" draggableColumns="false"
+			resizableColumns="false">
+
+			<p:ajax event="rowEdit" listener="#{fornecedorHandle.alterar}"
+				update="@this" />
+
+			<f:facet name="header">
+				<p:outputPanel>
+					<h:outputText value="Pesquisar: " />
+					<p:inputText id="globalFilter" onkeyup="PF('tabelaFornecedores').filter()"
+						filterBy="#{f.razaoSocial}" />
+				</p:outputPanel>
+			</f:facet>
+
+			<p:column headerText="Código" sortBy="#{f.codigoPessoa}"
+				filterBy="#{f.codigoPessoa}" filterStyle="display:none;"
+				style="width:80px">
+				<h:outputText value="#{f.codigoPessoa}" />
+			</p:column>
+
+			<p:column headerText="Nome" sortBy="#{f.nome}" filterBy="#{f.nome}"
+				filterStyle="display:none;">
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{f.nome}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:inputText value="#{f.nome}" />
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+			<p:column headerText="CNPJ" sortBy="#{f.cnpj}" filterBy="#{f.cnpj}"
+				filterStyle="display:none;">
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{f.cnpj}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:inputMask value="#{f.cnpj}"  mask="99.999.999/9999-99"/>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+			
+			<p:column headerText="IE" sortBy="#{f.ie}" filterBy="#{f.ie}"
+				filterStyle="display:none;">
+				<p:cellEditor>
+					<f:facet name="output">
+						<h:outputText value="#{f.ie}" />
+					</f:facet>
+					<f:facet name="input">
+						<p:inputMask value="#{f.ie}" mask="999.999.999.999"/>
+					</f:facet>
+				</p:cellEditor>
+			</p:column>
+
+			<p:column headerText="Opções" style="width:85px;">
+
+				<p:rowEditor />
+
+				<p:commandButton id="btnExcluir1" oncomplete="PF('confimExcluir').show()"
+					icon="ui-icon-close" title="excluir"
+					style="font-size: 7px; margin-left:10px;">
+					<f:setPropertyActionListener target="#{fornecedorHandle.fornecedor2}"
+						value="#{f}" />
+				</p:commandButton>
+
+				<p:commandButton id="btnExibir1" update="@form"
+					icon="ui-icon-search" title="Visualizar"
+					oncomplete="PF('exibicao').show()"
+					style="font-size: 7px; margin-left:10px;">
+
+					<f:setPropertyActionListener target="#{fornecedorHandle.fornecedor2}"
+						value="#{f}" />
+				</p:commandButton>
+
+			</p:column>
+
+		</p:dataTable>
+
+
+		<p:confirmDialog id="painelExcluir1"
+			message="Deseja realmente excluir?" header="Excluindo..."
+			severity="alert" widgetVar="confimExcluir">
+
+			<p:commandButton value="Sim"
+				actionListener="#{fornecedorHandle.excluir}" update="@form"
+				oncomplete="PF('confimExcluir').hide()"  />
+
+			<p:commandButton value="Não" oncomplete="PF('confimExcluir').hide()"  />
+
+		</p:confirmDialog>
+
+
+
+		<p:dialog widgetVar="exibicao" header="Detalhes" resizable="false"
+			width="400" showEffect="clip" hideEffect="fold" modal="true">
+
+
+			<h:panelGrid id="pgExibicao1" columns="2" cellpadding="4">
+				<h:outputText value="Código: " />
+				<h:outputText value="#{fornecedorHandle.fornecedor2.codigoPessoa}" />
+				<h:outputText value="Nome: " />
+				<h:outputText value="#{fornecedorHandle.fornecedor2.nome}" />
+				<h:outputText value="CNPJ: " />
+				<h:outputText value="#{fornecedorHandle.fornecedor2.cnpj}" />
+				<h:outputText value="IE: " />
+				<h:outputText value="#{fornecedorHandle.fornecedor2.ie}" />
+			</h:panelGrid>
+
+
+		</p:dialog>
+
+		<p:contextMenu for="fornecedores">
+			<p:menuitem value="Visualizar " icon="ui-icon-search"
+				oncomplete="PF('exibicao').show()" update="@form" />
+			<p:menuitem value="Deletar " icon="ui-icon-close"
+				oncomplete="PF('confimExcluir').show()" update="@form" />
+		</p:contextMenu>
+	</h:form>
+</h:body>
+
+
+
+</html>

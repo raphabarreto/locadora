@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<faces-config xmlns="http://java.sun.com/xml/ns/javaee"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facesconfig_2_0.xsd"
+	version="2.0">
+
+	<managed-bean>
+		<managed-bean-name>categoriaHandle</managed-bean-name>
+		<managed-bean-class>com.locadora.handle.CategoriaHandle</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>filmeHandle</managed-bean-name>
+		<managed-bean-class>com.locadora.handle.FilmeHandle</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>locacaoHandle</managed-bean-name>
+		<managed-bean-class>com.locadora.handle.LocacaoHandle</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>enderecoHandle</managed-bean-name>
+		<managed-bean-class>com.locadora.handle.EnderecoHandle</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>clienteHandle</managed-bean-name>
+		<managed-bean-class>com.locadora.handle.ClienteHandle</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	<managed-bean>
+		<managed-bean-name>fornecedorHandle</managed-bean-name>
+		<managed-bean-class>com.locadora.handle.FornecedorHandle</managed-bean-class>
+		<managed-bean-scope>request</managed-bean-scope>
+	</managed-bean>
+	
+	<application>
+		<locale-config>
+			<default-locale>pt_BR</default-locale>
+		</locale-config>
+	</application>
+</faces-config>

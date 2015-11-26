@@ -1,0 +1,355 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<link type="text/css"
+		href="css/custom-theme/jquery-ui-1.8.20.custom.css" rel="stylesheet" />
+</h:head>
+<h:body style="font-size:13px;">
+	<ui:include src="menu.xhtml" />
+	<h:form id="form">
+		<p:growl id="mensagens" showDetail="true" />
+		<p:accordionPanel multiple="true">
+
+			<p:tab title="Categoria">
+
+				<p:panel header="Categoria">
+					<h:panelGrid columns="2">
+						<h:outputLabel value="Descrição:" for="cDescricao" />
+						<br />
+						<p:inputText id="cDescricao"
+							value="#{categoriaHandle.categoria.descricao}" />
+						<p:watermark for="cDescricao" value="Digite a descrição" />
+						<p:commandButton value="Adicionar" id="madd"
+							actionListener="#{categoriaHandle.inserir()}" update="@form" />
+
+					</h:panelGrid>
+
+
+				</p:panel>
+
+				<br />
+				<p:dataTable var="c" id="categorias"
+					value="#{categoriaHandle.categorias}"
+					emptyMessage="Nenhuma categoria encontrada" paginator="true"
+					rows="10"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15,20,25,30,35,40,45,50"
+					paginatorPosition="bottom" rowKey="#{c.codigoCategoria}"
+					selectionMode="single" selection="#{categoriaHandle.categoria2}"
+					editable="true" widgetVar="tabelaCategorias"
+					draggableColumns="false" resizableColumns="false">
+
+					<p:ajax event="rowEdit" listener="#{categoriaHandle.alterar}"
+						update="@this" />
+
+					<f:facet name="header">
+						<p:outputPanel>
+							<h:outputText value="Pesquisar: " />
+							<p:inputText id="globalFilter"
+								onkeyup="PF('tabelaCategorias').filter()"
+								filterBy="#{c.codigoCategoria}" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:column headerText="Código" sortBy="#{c.codigoCategoria}"
+						filterBy="#{c.codigoCategoria}" filterStyle="display:none;"
+						style="width:80px">
+						<h:outputText value="#{c.codigoCategoria}" />
+					</p:column>
+
+					<p:column headerText="Categoria" sortBy="#{c.descricao}"
+						filterBy="#{c.descricao}" filterStyle="display:none;">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{c.descricao}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{c.descricao}" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column headerText="Opções" style="width:85px;">
+
+						<p:rowEditor />
+
+						<p:commandButton id="btnExcluir1"
+							oncomplete="PF('confimExcluir').show()" icon="ui-icon-close"
+							title="excluir" style="font-size: 7px; margin-left:10px;">
+							<f:setPropertyActionListener
+								target="#{categoriaHandle.categoria2}" value="#{c}" />
+						</p:commandButton>
+
+						<p:commandButton id="btnExibir1" update="@form"
+							icon="ui-icon-search" title="Visualizar"
+							oncomplete="PF('exibicao').show()"
+							style="font-size: 7px; margin-left:10px;">
+
+							<f:setPropertyActionListener
+								target="#{categoriaHandle.categoria2}" value="#{c}" />
+						</p:commandButton>
+
+					</p:column>
+
+				</p:dataTable>
+
+
+				<p:confirmDialog id="painelExcluir1"
+					message="Deseja realmente excluir?" header="Excluindo..."
+					severity="alert" widgetVar="confimExcluir">
+
+					<p:commandButton value="Sim"
+						actionListener="#{categoriaHandle.excluir}" update="@form"
+						oncomplete="PF('confimExcluir').hide()" />
+
+					<p:commandButton value="Não" oncomplete="confimExcluir.hide()" />
+
+				</p:confirmDialog>
+
+
+
+				<p:dialog widgetVar="exibicao" header="Detalhes" resizable="false"
+					width="200" showEffect="clip" hideEffect="fold" modal="true">
+
+
+					<h:panelGrid id="pgExibicao1" columns="2" cellpadding="4">
+						<h:outputText value="Código: " />
+						<h:outputText
+							value="#{categoriaHandle.categoria2.codigoCategoria}" />
+						<h:outputText value="Descrição: " />
+						<h:outputText value="#{categoriaHandle.categoria2.descricao}" />
+					</h:panelGrid>
+
+
+				</p:dialog>
+
+				<p:contextMenu for="categorias">
+					<p:menuitem value="Visualizar " icon="ui-icon-search"
+						oncomplete="exibicao.show()" update="@form" />
+					<p:menuitem value="Deletar " icon="ui-icon-close"
+						oncomplete="PF('confimExcluir').show()" update="@form" />
+				</p:contextMenu>
+
+
+			</p:tab>
+
+			<p:tab title="Filme">
+
+
+				<p:panel header="Filme">
+					<h:panelGrid columns="4">
+
+
+						<h:outputLabel value="Titulo:" for="ftitulo" />
+
+						<p:inputText id="ftitulo" value="#{filmeHandle.filme.titulo}" />
+						<p:watermark for="ftitulo" value="Digite o título" />
+
+						<h:outputLabel value="" for="" />
+						<h:outputLabel value="Categorias" />
+						<h:selectOneMenu value="#{filmeHandle.categoria.codigoCategoria}">
+							<f:selectItem itemLabel="Selecione uma categoria" itemValue="" />
+							<f:selectItems value="#{categoriaHandle.categorias}"
+								var="f_categoria" itemLabel="#{f_categoria.descricao}"
+								itemValue="#{f_categoria.codigoCategoria}" />
+						</h:selectOneMenu>
+
+
+						<br />
+						<h:outputLabel value="" for="" />
+						<h:outputLabel value="Sinopse" for="fsinopse" />
+
+						<p:inputText id="fsinopse" value="#{filmeHandle.filme.sinopse}" />
+						<p:watermark for="fsinopse" value="Digite a sinopse" />
+
+						<h:outputLabel value="" for="" />
+						<h:outputLabel value="Valor" for="fvalor" />
+						<p:inputText id="fvalor" value="#{filmeHandle.filme.valor}" />
+
+
+						<br />
+
+						<p:commandButton value="Adicionar" id="add2"
+							actionListener="#{filmeHandle.inserir}" update="@form" />
+
+
+					</h:panelGrid>
+
+
+				</p:panel>
+
+				<br />
+				<p:dataTable var="f" id="filmes" value="#{filmeHandle.filmes}"
+					emptyMessage="Nenhum filme encontrado" paginator="true" rows="10"
+					paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					rowsPerPageTemplate="5,10,15,20,25,30,35,40,45,50"
+					paginatorPosition="bottom" rowKey="#{f.codigoFilme}"
+					selectionMode="single" selection="#{filmeHandle.filme2}"
+					editable="true" widgetVar="tabelaFilmes" draggableColumns="false"
+					resizableColumns="false">
+
+					<p:ajax event="rowEdit" listener="#{filmeHandle.alterar}"
+						update="@this" />
+
+					<f:facet name="header">
+						<p:outputPanel>
+							<h:outputText value="Pesquisar: " />
+							<p:inputText id="globalFilter"
+								onkeyup="PF('tabelaClientes').filter()"
+								filterBy="#{f.codigoFilme}" />
+						</p:outputPanel>
+					</f:facet>
+
+					<p:column headerText="Código" sortBy="#{f.codigoFilme}"
+						filterBy="#{f.codigoFilme}" filterStyle="display:none;"
+						style="width:80px">
+						<h:outputText value="#{f.codigoFilme}" />
+					</p:column>
+
+					<p:column headerText="Filme" sortBy="#{f.titulo}"
+						filterBy="#{f.titulo}" filterStyle="display:none;">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{f.titulo}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{f.titulo}" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+
+
+					<p:column headerText="Sinopse" sortBy="#{f.sinopse}"
+						filterBy="#{f.sinopse}" filterStyle="display:none;"
+						style="width:140px;">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{f.sinopse}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{f.sinopse}" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+					<p:column headerText="Valor" sortBy="#{f.valor}"
+						filterBy="#{f.valor}" filterStyle="display:none;"
+						style="width:80px;">
+						<p:cellEditor>
+							<f:facet name="output">
+								<h:outputText value="#{f.valor}" />
+							</f:facet>
+							<f:facet name="input">
+								<p:inputText value="#{f.valor}" />
+							</f:facet>
+						</p:cellEditor>
+					</p:column>
+
+
+
+					<p:column headerText="Opções" style="width:85px;">
+						<p:rowEditor />
+
+						<p:commandButton id="btnExcluir2"
+							oncomplete="PF('confimExcluir2').show()" icon="ui-icon-close"
+							title="excluir" style="font-size: 7px; margin-left:10px;">
+							<f:setPropertyActionListener target="#{filmeHandle.filme2}"
+								value="#{f}" />
+
+						</p:commandButton>
+
+						<p:commandButton id="btnExibir2" update="@form"
+							icon="ui-icon-search" title="Visualizar"
+							style="font-size: 7px; margin-left:10px;"
+							oncomplete="PF('exibicao2').show()">
+
+							<f:setPropertyActionListener target="#{filmeHandle.filme2}"
+								value="#{f}" />
+						</p:commandButton>
+
+
+					</p:column>
+
+				</p:dataTable>
+
+				<p:confirmDialog id="painelExcluir2"
+					message="Deseja realmente excluir?" header="Excluindo..."
+					severity="alert" widgetVar="confimExcluir2">
+
+					<p:commandButton value="Sim"
+						actionListener="#{filmeHandle.excluir}" update="@form"
+						oncomplete="PF('confimExcluir2').hide()" />
+
+
+					<p:commandButton value="Não"
+						oncomplete="PF('confimExcluir2').hide()" />
+
+				</p:confirmDialog>
+
+
+				<p:dialog widgetVar="exibicao2" header="Detalhes" resizable="false"
+					width="200" showEffect="clip" hideEffect="fold" modal="true">
+
+
+					<h:panelGrid id="pgExibicao2" columns="2" cellpadding="4">
+						<h:outputText value="Código: " />
+						<h:outputText value="#{filmeHandle.filme2.codigoFilme}" />
+						<h:outputText value="Título: " />
+						<h:outputText value="#{filmeHandle.filme2.titulo}" />
+						<h:outputText value="Sinopse: " />
+						<h:outputText value="#{filmeHandle.filme2.sinopse}" />
+						<h:outputText value="Valor: " />
+						<h:outputText value="#{filmeHandle.filme2.valor}" />
+						<h:outputText value="Categoria: " />
+						<h:outputText value="#{filmeHandle.filme2.categoria.descricao}" />
+					</h:panelGrid>
+
+
+				</p:dialog>
+
+				<p:contextMenu for="categorias">
+					<p:menuitem value="Visualizar " icon="ui-icon-search"
+						oncomplete="PF('exibicao2').show()" update="@form" />
+					<p:menuitem value="Deletar " icon="ui-icon-close"
+						oncomplete="PF('confimExcluir2').show()" update="@form" />
+				</p:contextMenu>
+				<br />
+				<h:panelGrid columns="2">
+					<p:panel header="Exportar dados">
+						<h:commandLink>
+							<p:graphicImage value="/images/excel.png" />
+							<p:dataExporter type="xls" target="filmes"
+								fileName="Lista_de_Filmes" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage value="/images/pdf.png" />
+							<p:dataExporter type="pdf" target="filmes"
+								fileName="Lista_de_Filmes" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage value="/images/csv.png" />
+							<p:dataExporter type="csv" target="filmes"
+								fileName="Lista_de_Filmes" />
+						</h:commandLink>
+
+						<h:commandLink>
+							<p:graphicImage value="/images/xml.png" />
+							<p:dataExporter type="xml" target="filmes"
+								fileName="Lista_de_Filmes" />
+						</h:commandLink>
+
+					</p:panel>
+				</h:panelGrid>
+			</p:tab>
+		</p:accordionPanel>
+	</h:form>
+</h:body>
+</html>
