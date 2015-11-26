@@ -1,5 +1,4 @@
-# Locadora
-Locadora de Filmes
+# Locadora de filmes
 
 Tecnologias usadas:
 
