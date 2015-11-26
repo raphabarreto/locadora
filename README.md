@@ -1,5 +1,7 @@
 # Locadora de filmes
 
+Demonstração do sistema: http://bit.ly/1YwvQ4K
+
 Tecnologias usadas:
 
 - Java 
